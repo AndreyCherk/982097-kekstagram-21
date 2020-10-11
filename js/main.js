@@ -87,3 +87,61 @@ const pictureTemplate = document.querySelector(`#picture`)
 const photos = getPhotos(PHOTO_QUANTITY);
 
 renderPhotos(photos, pictures, pictureTemplate);
+
+
+const clearElement = (element) => {
+  const children = element.children;
+
+  for (let i = children.length - 1; i >= 0; i--) {
+    element.removeChild(children[i]);
+  }
+};
+
+const renderComment = (comment, commentTemplate) => {
+  const commentElement = commentTemplate.cloneNode(true);
+  const commentImage = commentElement.querySelector(`img`);
+
+  commentImage.src = comment.avatar;
+  commentImage.alt = comment.name;
+  commentElement.querySelector(`.social__text`).textContent = comment.message;
+
+  return commentElement;
+};
+
+const renderComments = (comments, listElement, commentTemplate) => {
+  clearElement(listElement);
+
+  for (let i = 0; i < comments.length; i++) {
+    listElement.appendChild(renderComment(comments[i], commentTemplate));
+  }
+};
+
+const renderFullSizePhoto = (photo) => {
+  fullSizePhoto.src = photo.url;
+  likesCount.textContent = photo.likes;
+  commentsCount.textContent = photo.comments.length;
+  descriptionPhoto.textContent = photo.description;
+
+  renderComments(photo.comments, commentsList, commentTemplate);
+};
+
+const fullSizePicture = document.querySelector(`.big-picture`);
+fullSizePicture.classList.remove(`hidden`);
+
+const fullSizePhoto = fullSizePicture.querySelector(`.big-picture__img img`);
+const descriptionPhoto = fullSizePicture.querySelector(`.social__caption`);
+const likesCount = fullSizePicture.querySelector(`.likes-count`);
+const commentsCount = fullSizePicture.querySelector(`.comments-count`);
+const commentsList = fullSizePicture.querySelector(`.social__comments`);
+const commentTemplate = fullSizePicture.querySelector(`.social__comment`);
+
+renderFullSizePhoto(photos[0]);
+
+const socialCommentCount = fullSizePicture.querySelector(`.social__comment-count`);
+socialCommentCount.classList.add(`hidden`);
+
+const commentsLoader = fullSizePicture.querySelector(`.comments-loader`);
+commentsLoader.classList.add(`hidden`);
+
+const body = document.querySelector(`body`);
+body.classList.add(`modal-open`);
