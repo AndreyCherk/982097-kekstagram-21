@@ -63,6 +63,8 @@ const EFFECTS = {
 const MIN_SCALE_PERCENT = 25;
 const MAX_SCALE_PERCENT = 100;
 const DEFAULT_SCALE_PERCENT = 100;
+const HASHTAGS_MAX_QUANTITY = 5;
+const HASHTAGS_MAX_LENGTH = 20;
 
 const getRatio = (minRangeValue, maxRangeValue, percent) => (maxRangeValue - minRangeValue) * percent / 100 + minRangeValue;
 
@@ -285,6 +287,39 @@ const onEffectPinMouseup = () => {
   effectLevelInput.value = effectPercent;
 };
 
+const regExp = /^#[a-zA-Zа-яА-Я0-9]*$/;
+
+const onHashtagInputChange = () => {
+  const hashtags = hashtagsInput.value.toLowerCase().split(` `);
+
+  if (hashtags.length > HASHTAGS_MAX_QUANTITY) {
+    hashtagsInput.setCustomValidity(`Нельзя указать больше ${HASHTAGS_MAX_QUANTITY} хэштегов`);
+  } else {
+    for (let i = 0; i < hashtags.length; i++) {
+      if (hashtags.includes(hashtags[i], i + 1)) {
+        hashtagsInput.setCustomValidity(`Один и тот же хэштег не может быть использован дважды`);
+        break;
+      } else if (hashtags[i].length > HASHTAGS_MAX_LENGTH) {
+        hashtagsInput.setCustomValidity(`Длина хэштега не должна превышать ${HASHTAGS_MAX_LENGTH} символов`);
+        break;
+      } else if (hashtags[i][0] !== `#`) {
+        hashtagsInput.setCustomValidity(`Хэштег должен начинаеться с символа решётки`);
+        break;
+      } else if (hashtags[i].length === 1) {
+        hashtagsInput.setCustomValidity(`Хештег не должен состоять только из одной решётки`);
+        break;
+      } else if (!regExp.test(hashtags[i])) {
+        hashtagsInput.setCustomValidity(`Хештег не должен содержать специальных символов`);
+        break;
+      } else {
+        hashtagsInput.setCustomValidity(``);
+      }
+    }
+  }
+
+  hashtagsInput.reportValidity();
+};
+
 const onPopupEscPress = (evt) => {
   if (evt.key === `Escape` && document.activeElement !== hashtagsInput) {
     evt.preventDefault();
@@ -302,6 +337,7 @@ const openUploadPopup = () => {
   effectLevelPin.addEventListener(`mouseup`, onEffectPinMouseup);
   scalePlusControl.addEventListener(`mouseup`, onPlusScaleButtonClick);
   scaleMinusControl.addEventListener(`mouseup`, onMinusScaleButtonClick);
+  hashtagsInput.addEventListener(`change`, onHashtagInputChange);
 };
 
 
@@ -314,6 +350,7 @@ const closeUploadPopup = () => {
   effectLevelPin.removeEventListener(`mouseup`, onEffectPinMouseup);
   scalePlusControl.removeEventListener(`mouseup`, onPlusScaleButtonClick);
   scaleMinusControl.removeEventListener(`mouseup`, onMinusScaleButtonClick);
+  hashtagsInput.removeEventListener(`change`, onHashtagInputChange);
 };
 
 uploadFileInput.addEventListener(`change`, () => {
