@@ -15,13 +15,13 @@ const PHOTO_QUANTITY = 25;
 const AVATAR_QUANTITY = 6;
 const LIKES_MIN_QUANTITY = 15;
 const LIKES_MAX_QUANTITY = 200;
-const DEFAULT_EFFECT_PERCENT = 40;
+const DEFAULT_EFFECT_PERCENT = 100;
+const EFFECT_STEP_PERCENT = 1;
 
 const EFFECTS = {
   chrome: {
     minValue: 0,
     maxValue: 1,
-    class: `effects__preview--chrome`,
     getLevel(percent) {
       return `grayscale(${getRatio(this.minValue, this.maxValue, percent)})`;
     }
@@ -29,7 +29,6 @@ const EFFECTS = {
   sepia: {
     minValue: 0,
     maxValue: 1,
-    class: `effects__preview--sepia`,
     getLevel(percent) {
       return `sepia(${getRatio(this.minValue, this.maxValue, percent)})`;
     }
@@ -37,7 +36,6 @@ const EFFECTS = {
   marvin: {
     minValue: 0,
     maxValue: 1,
-    class: `effects__preview--marvin`,
     getLevel(percent) {
       return `invert(${getRatio(this.minValue, this.maxValue, percent)})`;
     }
@@ -45,7 +43,6 @@ const EFFECTS = {
   phobos: {
     minValue: 0,
     maxValue: 3,
-    class: `effects__preview--phobos`,
     getLevel(percent) {
       return `blur(${getRatio(this.minValue, this.maxValue, percent)}px)`;
     }
@@ -53,7 +50,6 @@ const EFFECTS = {
   heat: {
     minValue: 1,
     maxValue: 3,
-    class: `effects__preview--heat`,
     getLevel(percent) {
       return `brightness(${getRatio(this.minValue, this.maxValue, percent)})`;
     }
@@ -62,6 +58,7 @@ const EFFECTS = {
 
 const MIN_SCALE_PERCENT = 25;
 const MAX_SCALE_PERCENT = 100;
+const SCALE_STEP_PERCENT = 25;
 const DEFAULT_SCALE_PERCENT = 100;
 const HASHTAGS_MAX_QUANTITY = 5;
 const HASHTAGS_MAX_LENGTH = 20;
@@ -211,8 +208,9 @@ const uploadPopupPreview = uploadPopup.querySelector(`.img-upload__preview img`)
 const effectsPrewiews = uploadPopup.querySelectorAll(`.effects__preview`);
 const effectLevelControl = uploadPopup.querySelector(`.effect-level`);
 const effectLevelInput = effectLevelControl.querySelector(`.effect-level__value`);
-const effectLevelBar = effectLevelControl.querySelector(`.effect-level__depth`);
-const effectLevelPin = effectLevelControl.querySelector(`.effect-level__pin`);
+const effectRange = effectLevelControl.querySelector(`.effect-level__line`);
+const effectLevelBar = effectRange.querySelector(`.effect-level__depth`);
+const effectLevelPin = effectRange.querySelector(`.effect-level__pin`);
 const scalePlusControl = uploadForm.querySelector(`.scale__control--bigger`);
 const scaleMinusControl = uploadForm.querySelector(`.scale__control--smaller`);
 const scaleValueInput = uploadForm.querySelector(`.scale__control--value`);
@@ -233,7 +231,7 @@ let scale;
 
 const onPlusScaleButtonClick = () => {
   if (scale < MAX_SCALE_PERCENT) {
-    scale += 25;
+    scale += SCALE_STEP_PERCENT;
     scaleValueInput.value = `${scale}%`;
     uploadPopupPreview.style.transform = `scale(${scale / 100})`;
   }
@@ -241,7 +239,7 @@ const onPlusScaleButtonClick = () => {
 
 const onMinusScaleButtonClick = () => {
   if (scale > MIN_SCALE_PERCENT) {
-    scale -= 25;
+    scale -= SCALE_STEP_PERCENT;
     scaleValueInput.value = `${scale}%`;
     uploadPopupPreview.style.transform = `scale(${scale / 100})`;
   }
@@ -271,7 +269,7 @@ const onEffectChange = (evt) => {
 
     if (evt.target.value !== `none`) {
       effect = evt.target.value;
-      effectClass = EFFECTS[effect].class;
+      effectClass = `effects__preview--${effect}`;
 
       uploadPopupPreview.classList.add(effectClass);
       uploadPopupPreview.style.filter = EFFECTS[effect].getLevel(DEFAULT_EFFECT_PERCENT);
@@ -280,11 +278,33 @@ const onEffectChange = (evt) => {
   }
 };
 
-const onEffectPinMouseup = () => {
-  const effectPercent = effectLevelPin.style.left.slice(0, -1);
+const changeEffectLevel = (effectPercent) => {
   uploadPopupPreview.style.filter = EFFECTS[effect].getLevel(effectPercent);
+  effectLevelPin.style.left = `${effectPercent}%`;
   effectLevelBar.style.width = `${effectPercent}%`;
   effectLevelInput.value = effectPercent;
+};
+
+const onEffectPinMouseup = () => {
+  // Перемещение пина
+  changeEffectLevel(effectLevelPin.style.left.slice(0, -1));
+};
+
+const onEffectRangeClick = (evt) => {
+  if (evt.target.matches(`.effect-level__line`)) {
+    // Вычисление новых координат пина
+    changeEffectLevel(effectLevelPin.style.left.slice(0, -1));
+  }
+};
+
+const onEffectPinKeydown = (evt) => {
+  const currentPinPercent = +effectLevelPin.style.left.slice(0, -1);
+
+  if (evt.key === `ArrowLeft` && currentPinPercent > 0) {
+    changeEffectLevel(currentPinPercent - EFFECT_STEP_PERCENT);
+  } else if (evt.key === `ArrowRight` && currentPinPercent < 100) {
+    changeEffectLevel(currentPinPercent + EFFECT_STEP_PERCENT);
+  }
 };
 
 const regExp = /^#[a-zA-Zа-яА-Я0-9]*$/;
@@ -334,7 +354,9 @@ const openUploadPopup = () => {
 
   document.addEventListener(`keydown`, onPopupEscPress);
   uploadForm.addEventListener(`change`, onEffectChange);
+  uploadForm.addEventListener(`click`, onEffectRangeClick);
   effectLevelPin.addEventListener(`mouseup`, onEffectPinMouseup);
+  effectLevelPin.addEventListener(`keydown`, onEffectPinKeydown);
   scalePlusControl.addEventListener(`mouseup`, onPlusScaleButtonClick);
   scaleMinusControl.addEventListener(`mouseup`, onMinusScaleButtonClick);
   hashtagsInput.addEventListener(`change`, onHashtagInputChange);
@@ -347,7 +369,9 @@ const closeUploadPopup = () => {
 
   document.removeEventListener(`keydown`, onPopupEscPress);
   uploadForm.removeEventListener(`change`, onEffectChange);
+  uploadForm.removeEventListener(`click`, onEffectRangeClick);
   effectLevelPin.removeEventListener(`mouseup`, onEffectPinMouseup);
+  effectLevelPin.removeEventListener(`keydown`, onEffectPinKeydown);
   scalePlusControl.removeEventListener(`mouseup`, onPlusScaleButtonClick);
   scaleMinusControl.removeEventListener(`mouseup`, onMinusScaleButtonClick);
   hashtagsInput.removeEventListener(`change`, onHashtagInputChange);
