@@ -290,20 +290,31 @@ const onEffectPinMouseup = () => {
   changeEffectLevel(effectLevelPin.style.left.slice(0, -1));
 };
 
+
 const onEffectRangeClick = (evt) => {
-  if (evt.target.matches(`.effect-level__line`)) {
-    // Вычисление новых координат пина
-    changeEffectLevel(effectLevelPin.style.left.slice(0, -1));
+  if (evt.target.matches(`.effect-level__line`) || evt.target.matches(`.effect-level__depth`)) {
+    const shiftX = evt.clientX - effectRange.getBoundingClientRect().left;
+    const effectPercent = shiftX / effectRange.offsetWidth * 100;
+
+    changeEffectLevel(effectPercent);
   }
 };
 
 const onEffectPinKeydown = (evt) => {
   const currentPinPercent = +effectLevelPin.style.left.slice(0, -1);
 
-  if (evt.key === `ArrowLeft` && currentPinPercent > 0) {
-    changeEffectLevel(currentPinPercent - EFFECT_STEP_PERCENT);
-  } else if (evt.key === `ArrowRight` && currentPinPercent < 100) {
-    changeEffectLevel(currentPinPercent + EFFECT_STEP_PERCENT);
+  if (evt.key === `ArrowLeft`) {
+    if (currentPinPercent >= EFFECT_STEP_PERCENT) {
+      changeEffectLevel(currentPinPercent - EFFECT_STEP_PERCENT);
+    } else if (currentPinPercent > 0 && currentPinPercent < EFFECT_STEP_PERCENT) {
+      changeEffectLevel(0);
+    }
+  } else if (evt.key === `ArrowRight`) {
+    if (currentPinPercent <= 100 - EFFECT_STEP_PERCENT) {
+      changeEffectLevel(currentPinPercent + EFFECT_STEP_PERCENT);
+    } else if (currentPinPercent < 100 && currentPinPercent > 100 - EFFECT_STEP_PERCENT) {
+      changeEffectLevel(100);
+    }
   }
 };
 
@@ -353,6 +364,7 @@ const openUploadPopup = () => {
   body.classList.add(`modal-open`);
 
   document.addEventListener(`keydown`, onPopupEscPress);
+  uploadPopupClose.addEventListener(`click`, closeUploadPopup);
   uploadForm.addEventListener(`change`, onEffectChange);
   uploadForm.addEventListener(`click`, onEffectRangeClick);
   effectLevelPin.addEventListener(`mouseup`, onEffectPinMouseup);
@@ -360,6 +372,7 @@ const openUploadPopup = () => {
   scalePlusControl.addEventListener(`mouseup`, onPlusScaleButtonClick);
   scaleMinusControl.addEventListener(`mouseup`, onMinusScaleButtonClick);
   hashtagsInput.addEventListener(`change`, onHashtagInputChange);
+
 };
 
 
@@ -368,6 +381,7 @@ const closeUploadPopup = () => {
   body.classList.remove(`modal-open`);
 
   document.removeEventListener(`keydown`, onPopupEscPress);
+  uploadPopupClose.removeEventListener(`click`, closeUploadPopup);
   uploadForm.removeEventListener(`change`, onEffectChange);
   uploadForm.removeEventListener(`click`, onEffectRangeClick);
   effectLevelPin.removeEventListener(`mouseup`, onEffectPinMouseup);
@@ -382,8 +396,4 @@ uploadFileInput.addEventListener(`change`, () => {
   getDefaultEffectSettings();
   getDefaultScaleSettings();
   openUploadPopup();
-});
-
-uploadPopupClose.addEventListener(`click`, () => {
-  closeUploadPopup();
 });
