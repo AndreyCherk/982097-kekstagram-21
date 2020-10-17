@@ -15,11 +15,62 @@ const PHOTO_QUANTITY = 25;
 const AVATAR_QUANTITY = 6;
 const LIKES_MIN_QUANTITY = 15;
 const LIKES_MAX_QUANTITY = 200;
+const DEFAULT_EFFECT_PERCENT = 100;
+const EFFECT_STEP_PERCENT = 1;
+
+const EFFECTS = {
+  chrome: {
+    minValue: 0,
+    maxValue: 1,
+    getLevel(percent) {
+      return `grayscale(${getRatio(this.minValue, this.maxValue, percent)})`;
+    }
+  },
+  sepia: {
+    minValue: 0,
+    maxValue: 1,
+    getLevel(percent) {
+      return `sepia(${getRatio(this.minValue, this.maxValue, percent)})`;
+    }
+  },
+  marvin: {
+    minValue: 0,
+    maxValue: 1,
+    getLevel(percent) {
+      return `invert(${getRatio(this.minValue, this.maxValue, percent)})`;
+    }
+  },
+  phobos: {
+    minValue: 0,
+    maxValue: 3,
+    getLevel(percent) {
+      return `blur(${getRatio(this.minValue, this.maxValue, percent)}px)`;
+    }
+  },
+  heat: {
+    minValue: 1,
+    maxValue: 3,
+    getLevel(percent) {
+      return `brightness(${getRatio(this.minValue, this.maxValue, percent)})`;
+    }
+  }
+};
+
+const MIN_SCALE_PERCENT = 25;
+const MAX_SCALE_PERCENT = 100;
+const SCALE_STEP_PERCENT = 25;
+const DEFAULT_SCALE_PERCENT = 100;
+const HASHTAGS_MAX_QUANTITY = 5;
+const HASHTAGS_MAX_LENGTH = 20;
+
+const getRatio = (minRangeValue, maxRangeValue, percent) => (maxRangeValue - minRangeValue) * percent / 100 + minRangeValue;
 
 const getRandomInteger = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
 
 const getRandomArrayItem = (array) => array[getRandomInteger(0, array.length - 1)];
 
+
+// Other user photo
 const getComment = () => {
   return {
     avatar: `img/avatar-${getRandomInteger(1, AVATAR_QUANTITY)}.svg`,
@@ -89,59 +140,260 @@ const photos = getPhotos(PHOTO_QUANTITY);
 renderPhotos(photos, pictures, pictureTemplate);
 
 
-const clearElement = (element) => {
-  const children = element.children;
+// Fullsize photo
+// const clearElement = (element) => {
+//   const children = element.children;
 
-  for (let i = children.length - 1; i >= 0; i--) {
-    element.removeChild(children[i]);
-  }
-};
+//   for (let i = children.length - 1; i >= 0; i--) {
+//     element.removeChild(children[i]);
+//   }
+// };
 
-const renderComment = (comment, commentTemplate) => {
-  const commentElement = commentTemplate.cloneNode(true);
-  const commentImage = commentElement.querySelector(`img`);
+// const renderComment = (comment, commentTemplate) => {
+//   const commentElement = commentTemplate.cloneNode(true);
+//   const commentImage = commentElement.querySelector(`img`);
 
-  commentImage.src = comment.avatar;
-  commentImage.alt = comment.name;
-  commentElement.querySelector(`.social__text`).textContent = comment.message;
+//   commentImage.src = comment.avatar;
+//   commentImage.alt = comment.name;
+//   commentElement.querySelector(`.social__text`).textContent = comment.message;
 
-  return commentElement;
-};
+//   return commentElement;
+// };
 
-const renderComments = (comments, listElement, commentTemplate) => {
-  clearElement(listElement);
+// const renderComments = (comments, listElement, commentTemplate) => {
+//   clearElement(listElement);
 
-  for (let i = 0; i < comments.length; i++) {
-    listElement.appendChild(renderComment(comments[i], commentTemplate));
-  }
-};
+//   for (let i = 0; i < comments.length; i++) {
+//     listElement.appendChild(renderComment(comments[i], commentTemplate));
+//   }
+// };
 
-const renderFullSizePhoto = (photo) => {
-  fullSizePhoto.src = photo.url;
-  likesCount.textContent = photo.likes;
-  commentsCount.textContent = photo.comments.length;
-  descriptionPhoto.textContent = photo.description;
+// const renderFullSizePhoto = (photo) => {
+//   fullSizePhoto.src = photo.url;
+//   likesCount.textContent = photo.likes;
+//   commentsCount.textContent = photo.comments.length;
+//   descriptionPhoto.textContent = photo.description;
 
-  renderComments(photo.comments, commentsList, commentTemplate);
-};
+//   renderComments(photo.comments, commentsList, commentTemplate);
+// };
 
-const fullSizePicture = document.querySelector(`.big-picture`);
-fullSizePicture.classList.remove(`hidden`);
+// const fullSizePicture = document.querySelector(`.big-picture`);
+// fullSizePicture.classList.remove(`hidden`);
 
-const fullSizePhoto = fullSizePicture.querySelector(`.big-picture__img img`);
-const descriptionPhoto = fullSizePicture.querySelector(`.social__caption`);
-const likesCount = fullSizePicture.querySelector(`.likes-count`);
-const commentsCount = fullSizePicture.querySelector(`.comments-count`);
-const commentsList = fullSizePicture.querySelector(`.social__comments`);
-const commentTemplate = fullSizePicture.querySelector(`.social__comment`);
+// const fullSizePhoto = fullSizePicture.querySelector(`.big-picture__img img`);
+// const descriptionPhoto = fullSizePicture.querySelector(`.social__caption`);
+// const likesCount = fullSizePicture.querySelector(`.likes-count`);
+// const commentsCount = fullSizePicture.querySelector(`.comments-count`);
+// const commentsList = fullSizePicture.querySelector(`.social__comments`);
+// const commentTemplate = fullSizePicture.querySelector(`.social__comment`);
 
-renderFullSizePhoto(photos[0]);
+// renderFullSizePhoto(photos[0]);
 
-const socialCommentCount = fullSizePicture.querySelector(`.social__comment-count`);
-socialCommentCount.classList.add(`hidden`);
+// const socialCommentCount = fullSizePicture.querySelector(`.social__comment-count`);
+// socialCommentCount.classList.add(`hidden`);
 
-const commentsLoader = fullSizePicture.querySelector(`.comments-loader`);
-commentsLoader.classList.add(`hidden`);
+// const commentsLoader = fullSizePicture.querySelector(`.comments-loader`);
+// commentsLoader.classList.add(`hidden`);
 
+// const body = document.querySelector(`body`);
+// body.classList.add(`modal-open`);
+
+
+// Upload file
+const uploadForm = document.querySelector(`.img-upload__form`);
+const uploadPopup = uploadForm.querySelector(`.img-upload__overlay`);
+const uploadFileInput = uploadForm.querySelector(`.img-upload__input`);
+const uploadPopupClose = uploadPopup.querySelector(`.img-upload__cancel`);
+const uploadPopupPreview = uploadPopup.querySelector(`.img-upload__preview img`);
+const effectsPrewiews = uploadPopup.querySelectorAll(`.effects__preview`);
+const effectLevelControl = uploadPopup.querySelector(`.effect-level`);
+const effectLevelInput = effectLevelControl.querySelector(`.effect-level__value`);
+const effectRange = effectLevelControl.querySelector(`.effect-level__line`);
+const effectLevelBar = effectRange.querySelector(`.effect-level__depth`);
+const effectLevelPin = effectRange.querySelector(`.effect-level__pin`);
+const scalePlusControl = uploadForm.querySelector(`.scale__control--bigger`);
+const scaleMinusControl = uploadForm.querySelector(`.scale__control--smaller`);
+const scaleValueInput = uploadForm.querySelector(`.scale__control--value`);
+const hashtagsInput = uploadForm.querySelector(`.text__hashtags`);
 const body = document.querySelector(`body`);
-body.classList.add(`modal-open`);
+
+const renderPreviews = () => {
+  const uploadFileURL = URL.createObjectURL(uploadFileInput.files[0]);
+
+  uploadPopupPreview.src = uploadFileURL;
+
+  for (let i = 0; i < effectsPrewiews.length; i++) {
+    effectsPrewiews[i].style.backgroundImage = `url(${uploadFileURL})`;
+  }
+};
+
+let scale;
+
+const onPlusScaleButtonClick = () => {
+  if (scale < MAX_SCALE_PERCENT) {
+    scale += SCALE_STEP_PERCENT;
+    scaleValueInput.value = `${scale}%`;
+    uploadPopupPreview.style.transform = `scale(${scale / 100})`;
+  }
+};
+
+const onMinusScaleButtonClick = () => {
+  if (scale > MIN_SCALE_PERCENT) {
+    scale -= SCALE_STEP_PERCENT;
+    scaleValueInput.value = `${scale}%`;
+    uploadPopupPreview.style.transform = `scale(${scale / 100})`;
+  }
+};
+
+const getDefaultScaleSettings = () => {
+  scale = DEFAULT_SCALE_PERCENT;
+  scaleValueInput.value = `${scale}%`;
+  uploadPopupPreview.style.transform = `scale(${scale / 100})`;
+};
+
+const getDefaultEffectSettings = () => {
+  effectLevelControl.classList.add(`hidden`);
+  effectLevelPin.style.left = `${DEFAULT_EFFECT_PERCENT}%`;
+  effectLevelBar.style.width = `${DEFAULT_EFFECT_PERCENT}%`;
+  uploadPopupPreview.classList.remove(effectClass);
+  uploadPopupPreview.style.filter = ``;
+  effectLevelInput.value = DEFAULT_EFFECT_PERCENT;
+};
+
+let effect;
+let effectClass;
+
+const onEffectChange = (evt) => {
+  if (evt.target.matches(`input[type="radio"]`)) {
+    getDefaultEffectSettings();
+
+    if (evt.target.value !== `none`) {
+      effect = evt.target.value;
+      effectClass = `effects__preview--${effect}`;
+
+      uploadPopupPreview.classList.add(effectClass);
+      uploadPopupPreview.style.filter = EFFECTS[effect].getLevel(DEFAULT_EFFECT_PERCENT);
+      effectLevelControl.classList.remove(`hidden`);
+    }
+  }
+};
+
+const changeEffectLevel = (effectPercent) => {
+  uploadPopupPreview.style.filter = EFFECTS[effect].getLevel(effectPercent);
+  effectLevelPin.style.left = `${effectPercent}%`;
+  effectLevelBar.style.width = `${effectPercent}%`;
+  effectLevelInput.value = effectPercent;
+};
+
+const onEffectPinMouseup = () => {
+  // Перемещение пина
+  changeEffectLevel(effectLevelPin.style.left.slice(0, -1));
+};
+
+
+const onEffectRangeClick = (evt) => {
+  if (evt.target.matches(`.effect-level__line`) || evt.target.matches(`.effect-level__depth`)) {
+    const shiftX = evt.clientX - effectRange.getBoundingClientRect().left;
+    const effectPercent = shiftX / effectRange.offsetWidth * 100;
+
+    changeEffectLevel(effectPercent);
+  }
+};
+
+const onEffectPinKeydown = (evt) => {
+  const currentPinPercent = +effectLevelPin.style.left.slice(0, -1);
+
+  if (evt.key === `ArrowLeft`) {
+    if (currentPinPercent >= EFFECT_STEP_PERCENT) {
+      changeEffectLevel(currentPinPercent - EFFECT_STEP_PERCENT);
+    } else if (currentPinPercent > 0 && currentPinPercent < EFFECT_STEP_PERCENT) {
+      changeEffectLevel(0);
+    }
+  } else if (evt.key === `ArrowRight`) {
+    if (currentPinPercent <= 100 - EFFECT_STEP_PERCENT) {
+      changeEffectLevel(currentPinPercent + EFFECT_STEP_PERCENT);
+    } else if (currentPinPercent < 100 && currentPinPercent > 100 - EFFECT_STEP_PERCENT) {
+      changeEffectLevel(100);
+    }
+  }
+};
+
+const regExp = /^#[a-zA-Zа-яА-Я0-9]*$/;
+
+const onHashtagInputChange = () => {
+  const hashtags = hashtagsInput.value.toLowerCase().split(` `);
+
+  if (hashtags.length > HASHTAGS_MAX_QUANTITY) {
+    hashtagsInput.setCustomValidity(`Нельзя указать больше ${HASHTAGS_MAX_QUANTITY} хэштегов`);
+  } else {
+    for (let i = 0; i < hashtags.length; i++) {
+      if (hashtags.includes(hashtags[i], i + 1)) {
+        hashtagsInput.setCustomValidity(`Один и тот же хэштег не может быть использован дважды`);
+        break;
+      } else if (hashtags[i].length > HASHTAGS_MAX_LENGTH) {
+        hashtagsInput.setCustomValidity(`Длина хэштега не должна превышать ${HASHTAGS_MAX_LENGTH} символов`);
+        break;
+      } else if (hashtags[i][0] !== `#`) {
+        hashtagsInput.setCustomValidity(`Хэштег должен начинаеться с символа решётки`);
+        break;
+      } else if (hashtags[i].length === 1) {
+        hashtagsInput.setCustomValidity(`Хештег не должен состоять только из одной решётки`);
+        break;
+      } else if (!regExp.test(hashtags[i])) {
+        hashtagsInput.setCustomValidity(`Хештег не должен содержать специальных символов`);
+        break;
+      } else {
+        hashtagsInput.setCustomValidity(``);
+      }
+    }
+  }
+
+  hashtagsInput.reportValidity();
+};
+
+const onPopupEscPress = (evt) => {
+  if (evt.key === `Escape` && document.activeElement !== hashtagsInput) {
+    evt.preventDefault();
+    closeUploadPopup();
+    uploadFileInput.value = ``;
+  }
+};
+
+const openUploadPopup = () => {
+  uploadPopup.classList.remove(`hidden`);
+  body.classList.add(`modal-open`);
+
+  document.addEventListener(`keydown`, onPopupEscPress);
+  uploadPopupClose.addEventListener(`click`, closeUploadPopup);
+  uploadForm.addEventListener(`change`, onEffectChange);
+  uploadForm.addEventListener(`click`, onEffectRangeClick);
+  effectLevelPin.addEventListener(`mouseup`, onEffectPinMouseup);
+  effectLevelPin.addEventListener(`keydown`, onEffectPinKeydown);
+  scalePlusControl.addEventListener(`mouseup`, onPlusScaleButtonClick);
+  scaleMinusControl.addEventListener(`mouseup`, onMinusScaleButtonClick);
+  hashtagsInput.addEventListener(`change`, onHashtagInputChange);
+
+};
+
+
+const closeUploadPopup = () => {
+  uploadPopup.classList.add(`hidden`);
+  body.classList.remove(`modal-open`);
+
+  document.removeEventListener(`keydown`, onPopupEscPress);
+  uploadPopupClose.removeEventListener(`click`, closeUploadPopup);
+  uploadForm.removeEventListener(`change`, onEffectChange);
+  uploadForm.removeEventListener(`click`, onEffectRangeClick);
+  effectLevelPin.removeEventListener(`mouseup`, onEffectPinMouseup);
+  effectLevelPin.removeEventListener(`keydown`, onEffectPinKeydown);
+  scalePlusControl.removeEventListener(`mouseup`, onPlusScaleButtonClick);
+  scaleMinusControl.removeEventListener(`mouseup`, onMinusScaleButtonClick);
+  hashtagsInput.removeEventListener(`change`, onHashtagInputChange);
+};
+
+uploadFileInput.addEventListener(`change`, () => {
+  renderPreviews();
+  getDefaultEffectSettings();
+  getDefaultScaleSettings();
+  openUploadPopup();
+});
