@@ -78,7 +78,7 @@ const renderPhotos = (photos, listElement, photoTemplate) => {
 };
 
 
-const pictures = document.querySelector(`.pictures`);
+const picturesContainer = document.querySelector(`.pictures`);
 
 const pictureTemplate = document.querySelector(`#picture`)
   .content
@@ -86,7 +86,7 @@ const pictureTemplate = document.querySelector(`#picture`)
 
 const photos = getPhotos(PHOTO_QUANTITY);
 
-renderPhotos(photos, pictures, pictureTemplate);
+renderPhotos(photos, picturesContainer, pictureTemplate);
 
 
 const clearElement = (element) => {
@@ -126,16 +126,16 @@ const renderFullSizePhoto = (photo) => {
 };
 
 const fullSizePicture = document.querySelector(`.big-picture`);
-fullSizePicture.classList.remove(`hidden`);
-
 const fullSizePhoto = fullSizePicture.querySelector(`.big-picture__img img`);
+const fullSizePhotoClose = fullSizePicture.querySelector(`.big-picture__cancel`);
 const descriptionPhoto = fullSizePicture.querySelector(`.social__caption`);
 const likesCount = fullSizePicture.querySelector(`.likes-count`);
 const commentsCount = fullSizePicture.querySelector(`.comments-count`);
 const commentsList = fullSizePicture.querySelector(`.social__comments`);
 const commentTemplate = fullSizePicture.querySelector(`.social__comment`);
 
-renderFullSizePhoto(photos[0]);
+const pictures = picturesContainer.querySelectorAll(`.picture__img`);
+const picturesLinks = picturesContainer.querySelectorAll(`.picture`);
 
 const socialCommentCount = fullSizePicture.querySelector(`.social__comment-count`);
 socialCommentCount.classList.add(`hidden`);
@@ -144,4 +144,50 @@ const commentsLoader = fullSizePicture.querySelector(`.comments-loader`);
 commentsLoader.classList.add(`hidden`);
 
 const body = document.querySelector(`body`);
-body.classList.add(`modal-open`);
+
+const onFullSizePhotoEscPress = (evt) => {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    closeFullSizePhoto();
+  }
+};
+
+const openFullSizePhoto = () => {
+  fullSizePicture.classList.remove(`hidden`);
+  body.classList.add(`modal-open`);
+
+  document.addEventListener(`keydown`, onFullSizePhotoEscPress);
+  fullSizePhotoClose.addEventListener(`click`, closeFullSizePhoto);
+};
+
+const closeFullSizePhoto = () => {
+  fullSizePicture.classList.add(`hidden`);
+  body.classList.remove(`modal-open`);
+
+  document.removeEventListener(`keydown`, onFullSizePhotoEscPress);
+  fullSizePhotoClose.removeEventListener(`click`, closeFullSizePhoto);
+};
+
+picturesContainer.addEventListener(`click`, (evt) => {
+  if (evt.target.matches(`.picture__img`) || evt.target.matches(`.picture`)) {
+    if (evt.target.matches(`.picture__img`)) {
+
+      for (let i = 0; i < pictures.length; i++) {
+        if (evt.target === pictures[i]) {
+          renderFullSizePhoto(photos[i]);
+          break;
+        }
+      }
+    } else {
+      evt.preventDefault();
+
+      for (let i = 0; i < picturesLinks.length; i++) {
+        if (evt.target === picturesLinks[i]) {
+          renderFullSizePhoto(photos[i]);
+          break;
+        }
+      }
+    }
+    openFullSizePhoto();
+  }
+});
