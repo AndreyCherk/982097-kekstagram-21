@@ -11,6 +11,7 @@ const COMMENTS = [
 
 const COMMENTS_MIN_QUANTITY = 1;
 const COMMENTS_MAX_QUANTITY = 10;
+const COMMENT_MAX_LENGTH = 140;
 const PHOTO_QUANTITY = 25;
 const AVATAR_QUANTITY = 6;
 const LIKES_MIN_QUANTITY = 15;
@@ -254,7 +255,7 @@ const scalePlusControl = uploadForm.querySelector(`.scale__control--bigger`);
 const scaleMinusControl = uploadForm.querySelector(`.scale__control--smaller`);
 const scaleValueInput = uploadForm.querySelector(`.scale__control--value`);
 const hashtagsInput = uploadForm.querySelector(`.text__hashtags`);
-const body = document.querySelector(`body`);
+const commentInput = uploadForm.querySelector(`.text__description`);
 
 const renderPreviews = () => {
   const uploadFileURL = URL.createObjectURL(uploadFileInput.files[0]);
@@ -358,8 +359,13 @@ const onEffectPinKeydown = (evt) => {
 
 const regExp = /^#[a-zA-Zа-яА-Я0-9]*$/;
 
-const onHashtagInputChange = () => {
+const onHashtagInputInput = () => {
   const hashtags = hashtagsInput.value.toLowerCase().split(` `);
+  for (let i = 0; i < hashtags.length; i++) {
+    if (hashtags[i] === ``) {
+      hashtags.splice(i, 1);
+    }
+  }
 
   if (hashtags.length > HASHTAGS_MAX_QUANTITY) {
     hashtagsInput.setCustomValidity(`Нельзя указать больше ${HASHTAGS_MAX_QUANTITY} хэштегов`);
@@ -368,17 +374,17 @@ const onHashtagInputChange = () => {
       if (hashtags.includes(hashtags[i], i + 1)) {
         hashtagsInput.setCustomValidity(`Один и тот же хэштег не может быть использован дважды`);
         break;
-      } else if (hashtags[i].length > HASHTAGS_MAX_LENGTH) {
-        hashtagsInput.setCustomValidity(`Длина хэштега не должна превышать ${HASHTAGS_MAX_LENGTH} символов`);
+      } else if (hashtags[i].length >= HASHTAGS_MAX_LENGTH) {
+        hashtagsInput.setCustomValidity(`Длина хэштега не должна превышать ${HASHTAGS_MAX_LENGTH} симв.`);
         break;
       } else if (hashtags[i][0] !== `#`) {
         hashtagsInput.setCustomValidity(`Хэштег должен начинаеться с символа решётки`);
         break;
       } else if (hashtags[i].length === 1) {
-        hashtagsInput.setCustomValidity(`Хештег не должен состоять только из одной решётки`);
+        hashtagsInput.setCustomValidity(`Хэштег не должен состоять только из одной решётки`);
         break;
       } else if (!regExp.test(hashtags[i])) {
-        hashtagsInput.setCustomValidity(`Хештег не должен содержать специальных символов`);
+        hashtagsInput.setCustomValidity(`Хэштег не должен содержать специальных символов`);
         break;
       } else {
         hashtagsInput.setCustomValidity(``);
@@ -389,8 +395,20 @@ const onHashtagInputChange = () => {
   hashtagsInput.reportValidity();
 };
 
-const onPopupEscPress = (evt) => {
-  if (evt.key === `Escape` && document.activeElement !== hashtagsInput) {
+const onCommentInputInput = () => {
+  const valueLength = commentInput.value.length;
+
+  if (valueLength === COMMENT_MAX_LENGTH) {
+    commentInput.setCustomValidity(`Длина комментария не должна превышать ${COMMENT_MAX_LENGTH} симв.`);
+  } else {
+    commentInput.setCustomValidity(``);
+  }
+
+  commentInput.reportValidity();
+};
+
+const onUploadPopupEscPress = (evt) => {
+  if (evt.key === `Escape` && document.activeElement !== hashtagsInput && document.activeElement !== commentInput) {
     evt.preventDefault();
     closeUploadPopup();
     uploadFileInput.value = ``;
@@ -401,7 +419,7 @@ const openUploadPopup = () => {
   uploadPopup.classList.remove(`hidden`);
   body.classList.add(`modal-open`);
 
-  document.addEventListener(`keydown`, onPopupEscPress);
+  document.addEventListener(`keydown`, onUploadPopupEscPress);
   uploadPopupClose.addEventListener(`click`, closeUploadPopup);
   uploadForm.addEventListener(`change`, onEffectChange);
   uploadForm.addEventListener(`click`, onEffectRangeClick);
@@ -409,8 +427,8 @@ const openUploadPopup = () => {
   effectLevelPin.addEventListener(`keydown`, onEffectPinKeydown);
   scalePlusControl.addEventListener(`mouseup`, onPlusScaleButtonClick);
   scaleMinusControl.addEventListener(`mouseup`, onMinusScaleButtonClick);
-  hashtagsInput.addEventListener(`change`, onHashtagInputChange);
-
+  hashtagsInput.addEventListener(`input`, onHashtagInputInput);
+  commentInput.addEventListener(`input`, onCommentInputInput);
 };
 
 
@@ -418,7 +436,7 @@ const closeUploadPopup = () => {
   uploadPopup.classList.add(`hidden`);
   body.classList.remove(`modal-open`);
 
-  document.removeEventListener(`keydown`, onPopupEscPress);
+  document.removeEventListener(`keydown`, onUploadPopupEscPress);
   uploadPopupClose.removeEventListener(`click`, closeUploadPopup);
   uploadForm.removeEventListener(`change`, onEffectChange);
   uploadForm.removeEventListener(`click`, onEffectRangeClick);
@@ -426,7 +444,8 @@ const closeUploadPopup = () => {
   effectLevelPin.removeEventListener(`keydown`, onEffectPinKeydown);
   scalePlusControl.removeEventListener(`mouseup`, onPlusScaleButtonClick);
   scaleMinusControl.removeEventListener(`mouseup`, onMinusScaleButtonClick);
-  hashtagsInput.removeEventListener(`change`, onHashtagInputChange);
+  hashtagsInput.removeEventListener(`input`, onHashtagInputInput);
+  commentInput.removeEventListener(`input`, onCommentInputInput);
 };
 
 uploadFileInput.addEventListener(`change`, () => {
