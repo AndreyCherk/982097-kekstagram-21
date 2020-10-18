@@ -374,7 +374,7 @@ const onHashtagInputInput = () => {
       if (hashtags.includes(hashtags[i], i + 1)) {
         hashtagsInput.setCustomValidity(`Один и тот же хэштег не может быть использован дважды`);
         break;
-      } else if (hashtags[i].length >= HASHTAGS_MAX_LENGTH) {
+      } else if (hashtags[i].length > HASHTAGS_MAX_LENGTH) {
         hashtagsInput.setCustomValidity(`Длина хэштега не должна превышать ${HASHTAGS_MAX_LENGTH} симв.`);
         break;
       } else if (hashtags[i][0] !== `#`) {
@@ -398,8 +398,8 @@ const onHashtagInputInput = () => {
 const onCommentInputInput = () => {
   const valueLength = commentInput.value.length;
 
-  if (valueLength === COMMENT_MAX_LENGTH) {
-    commentInput.setCustomValidity(`Длина комментария не должна превышать ${COMMENT_MAX_LENGTH} симв.`);
+  if (valueLength > COMMENT_MAX_LENGTH) {
+    commentInput.setCustomValidity(`Удалите лишние ${valueLength - COMMENT_MAX_LENGTH} симв.`);
   } else {
     commentInput.setCustomValidity(``);
   }
