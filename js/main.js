@@ -116,6 +116,12 @@ const renderPhoto = (photo, photoTemplate) => {
   photoElement.querySelector(`.picture__comments`).textContent = photo.comments.length;
   photoElement.querySelector(`.picture__likes`).textContent = photo.likes;
 
+  photoElement.addEventListener(`click`, (evt) => {
+    evt.preventDefault();
+    renderFullSizePhoto(photo);
+    openFullSizePhoto();
+  });
+
   return photoElement;
 };
 
@@ -187,8 +193,6 @@ const commentsCount = fullSizePicture.querySelector(`.comments-count`);
 const commentsList = fullSizePicture.querySelector(`.social__comments`);
 const commentTemplate = fullSizePicture.querySelector(`.social__comment`);
 
-const pictures = picturesContainer.querySelectorAll(`.picture__img`);
-const picturesLinks = picturesContainer.querySelectorAll(`.picture`);
 
 const body = document.querySelector(`body`);
 
@@ -214,30 +218,6 @@ const closeFullSizePhoto = () => {
   document.removeEventListener(`keydown`, onFullSizePhotoEscPress);
   fullSizePhotoClose.removeEventListener(`click`, closeFullSizePhoto);
 };
-
-picturesContainer.addEventListener(`click`, (evt) => {
-  if (evt.target.matches(`.picture__img`) || evt.target.matches(`.picture`)) {
-    if (evt.target.matches(`.picture__img`)) {
-
-      for (let i = 0; i < pictures.length; i++) {
-        if (evt.target === pictures[i]) {
-          renderFullSizePhoto(photos[i]);
-          break;
-        }
-      }
-    } else {
-      evt.preventDefault();
-
-      for (let i = 0; i < picturesLinks.length; i++) {
-        if (evt.target === picturesLinks[i]) {
-          renderFullSizePhoto(photos[i]);
-          break;
-        }
-      }
-    }
-    openFullSizePhoto();
-  }
-});
 
 // Upload file
 const uploadForm = document.querySelector(`.img-upload__form`);
@@ -331,12 +311,10 @@ const onEffectPinMouseup = () => {
 };
 
 const onEffectRangeClick = (evt) => {
-  if (evt.target.matches(`.effect-level__line`) || evt.target.matches(`.effect-level__depth`)) {
-    const shiftX = evt.clientX - effectRange.getBoundingClientRect().left;
-    const effectPercent = shiftX / effectRange.offsetWidth * 100;
+  const shiftX = evt.clientX - effectRange.getBoundingClientRect().left;
+  const effectPercent = shiftX / effectRange.offsetWidth * 100;
 
-    changeEffectLevel(effectPercent);
-  }
+  changeEffectLevel(effectPercent);
 };
 
 const onEffectPinKeydown = (evt) => {
@@ -422,7 +400,7 @@ const openUploadPopup = () => {
   document.addEventListener(`keydown`, onUploadPopupEscPress);
   uploadPopupClose.addEventListener(`click`, closeUploadPopup);
   uploadForm.addEventListener(`change`, onEffectChange);
-  uploadForm.addEventListener(`click`, onEffectRangeClick);
+  effectRange.addEventListener(`click`, onEffectRangeClick);
   effectLevelPin.addEventListener(`mouseup`, onEffectPinMouseup);
   effectLevelPin.addEventListener(`keydown`, onEffectPinKeydown);
   scalePlusControl.addEventListener(`mouseup`, onPlusScaleButtonClick);
@@ -439,7 +417,7 @@ const closeUploadPopup = () => {
   document.removeEventListener(`keydown`, onUploadPopupEscPress);
   uploadPopupClose.removeEventListener(`click`, closeUploadPopup);
   uploadForm.removeEventListener(`change`, onEffectChange);
-  uploadForm.removeEventListener(`click`, onEffectRangeClick);
+  effectRange.removeEventListener(`click`, onEffectRangeClick);
   effectLevelPin.removeEventListener(`mouseup`, onEffectPinMouseup);
   effectLevelPin.removeEventListener(`keydown`, onEffectPinKeydown);
   scalePlusControl.removeEventListener(`mouseup`, onPlusScaleButtonClick);
