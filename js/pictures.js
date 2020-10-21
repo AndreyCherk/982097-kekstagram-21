@@ -29,7 +29,6 @@
     const fragment = document.createDocumentFragment();
 
     const picturesQuantity = (pictures.length <= PHOTO_MAX_QUANTITY) ? pictures.length : PHOTO_MAX_QUANTITY;
-    console.log(picturesQuantity);
 
     for (let i = 0; i < picturesQuantity; i++) {
       fragment.appendChild(renderPicture(pictures[i]));
