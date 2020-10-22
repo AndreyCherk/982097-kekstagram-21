@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  window.pictures.renderPictures(window.data.pictures);
+  window.load(window.pictures.renderPictures, window.pictures.errorRenderPictures);
 
   const uploadFileInput = document.querySelector(`.img-upload__input`);
 
