@@ -139,10 +139,30 @@
     effectLevelInput.value = effectPercent;
   };
 
-  const onEffectPinMouseup = () => {
-    // Перемещение пина
-    changeEffectLevel(effectLevelPin.style.left.slice(0, -1));
+  const onEffectPinMouseDown = () => {
+    const onEffectPinMouseMove = (moveEvt) => {
+
+      const shiftX = moveEvt.clientX - effectRange.getBoundingClientRect().left;
+      const effectPercent = shiftX / effectRange.offsetWidth * 100;
+
+      if (effectPercent > 100) {
+        changeEffectLevel(100);
+      } else if (effectPercent < 0) {
+        changeEffectLevel(0);
+      } else {
+        changeEffectLevel(effectPercent);
+      }
+    };
+
+    const onEffectPinMouseUp = () => {
+      document.removeEventListener(`mousemove`, onEffectPinMouseMove);
+      document.removeEventListener(`mouseup`, onEffectPinMouseUp);
+    };
+
+    document.addEventListener(`mousemove`, onEffectPinMouseMove);
+    document.addEventListener(`mouseup`, onEffectPinMouseUp);
   };
+
 
   const onEffectRangeClick = (evt) => {
     const shiftX = evt.clientX - effectRange.getBoundingClientRect().left;
@@ -235,7 +255,7 @@
     uploadPopupClose.addEventListener(`click`, closeUploadPopup);
     uploadForm.addEventListener(`change`, onEffectChange);
     effectRange.addEventListener(`click`, onEffectRangeClick);
-    effectLevelPin.addEventListener(`mouseup`, onEffectPinMouseup);
+    effectLevelPin.addEventListener(`mousedown`, onEffectPinMouseDown);
     effectLevelPin.addEventListener(`keydown`, onEffectPinKeydown);
     scalePlusControl.addEventListener(`mouseup`, onPlusScaleButtonClick);
     scaleMinusControl.addEventListener(`mouseup`, onMinusScaleButtonClick);
@@ -252,7 +272,7 @@
     uploadPopupClose.removeEventListener(`click`, closeUploadPopup);
     uploadForm.removeEventListener(`change`, onEffectChange);
     effectRange.removeEventListener(`click`, onEffectRangeClick);
-    effectLevelPin.removeEventListener(`mouseup`, onEffectPinMouseup);
+    effectLevelPin.removeEventListener(`mousedown`, onEffectPinMouseDown);
     effectLevelPin.removeEventListener(`keydown`, onEffectPinKeydown);
     scalePlusControl.removeEventListener(`mouseup`, onPlusScaleButtonClick);
     scaleMinusControl.removeEventListener(`mouseup`, onMinusScaleButtonClick);
