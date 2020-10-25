@@ -1,7 +1,6 @@
 'use strict';
 (() => {
-  window.load(window.pictures.renderPictures, window.pictures.errorRenderPictures);
-
+  window.load(window.pictures.loadPictures, window.pictures.errorLoadPictures);
   const uploadFileInput = document.querySelector(`.img-upload__input`);
 
   window.uploadFormImageSettings.getDefaultEffectSettings();
