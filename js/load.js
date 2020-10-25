@@ -4,6 +4,7 @@
   const URL = `https://21.javascript.pages.academy/kekstagram/data`;
 
   const TIMEOUT_IN_MS = 10000;
+  const STATUS_CODE_OK = 200;
 
   window.load = (onSuccess, onError) => {
     const xhr = new XMLHttpRequest();
@@ -11,7 +12,7 @@
     xhr.timeout = TIMEOUT_IN_MS;
 
     xhr.addEventListener(`load`, () => {
-      if (xhr.status === 200) {
+      if (xhr.status === STATUS_CODE_OK) {
         onSuccess(xhr.response);
       } else {
         onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
