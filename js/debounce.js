@@ -4,15 +4,16 @@
   const DEBOUNCE_INTERVAL = 500;
 
   window.debounce = (cb) => {
-    let lastTimeout = null;
+    let delay = false;
 
     return (...parameters) => {
-      if (lastTimeout) {
-        window.clearTimeout(lastTimeout);
-      }
-      lastTimeout = window.setTimeout(() => {
+      if (!delay) {
         cb(...parameters);
-      }, DEBOUNCE_INTERVAL);
+        delay = true;
+        setTimeout(() => {
+          delay = false;
+        }, DEBOUNCE_INTERVAL);
+      }
     };
   };
 })();
