@@ -5,9 +5,6 @@
 
   const filtersContainer = document.querySelector(`.img-filters`);
   const filterButtons = filtersContainer.querySelectorAll(`.img-filters__button`);
-  const filterDefaultButton = filtersContainer.querySelector(`#filter-default`);
-  const filterRandomButton = filtersContainer.querySelector(`#filter-random`);
-  const filterDiscussedButton = filtersContainer.querySelector(`#filter-discussed`);
 
   const picturesContainer = document.querySelector(`.pictures`);
 
@@ -26,7 +23,7 @@
     return randomArray;
   };
 
-  const getDisscussedArray = (array) => {
+  const getDiscussedArray = (array) => {
     const discussedArray = array.slice(0).sort((left, right) => {
       let commentDiff = right.comments.length - left.comments.length;
 
@@ -47,27 +44,20 @@
     newFilterElement.classList.add(`img-filters__button--active`);
   };
 
-
-  const onFilterDefaultClick = (array) => {
+  const onFilterClick = (array) => {
     return window.debounce((evt) => {
-      window.util.clearElement(picturesContainer, [`h2`, `section`]);
-      window.picturesRendering.renderPictures(array);
-      filterToggle(evt.target);
-    });
-  };
+      let sortArray;
 
-  const onFilterDiscussedClick = (array) => {
-    return window.debounce((evt) => {
-      window.util.clearElement(picturesContainer, [`h2`, `section`]);
-      window.picturesRendering.renderPictures(getDisscussedArray(array));
-      filterToggle(evt.target);
-    });
-  };
+      if (evt.target.matches(`#filter-random`)) {
+        sortArray = getRandomArray(array);
+      } else if (evt.target.matches(`#filter-discussed`)) {
+        sortArray = getDiscussedArray(array);
+      } else {
+        sortArray = array;
+      }
 
-  const onFilterRandomClick = (array) => {
-    return window.debounce((evt) => {
       window.util.clearElement(picturesContainer, [`h2`, `section`]);
-      window.picturesRendering.renderPictures(getRandomArray(array));
+      window.picturesRendering.renderPictures(sortArray);
       filterToggle(evt.target);
     });
   };
@@ -75,9 +65,7 @@
   const activateFilters = (array) =>{
 
     filtersContainer.classList.remove(`img-filters--inactive`);
-    filterDefaultButton.addEventListener(`click`, onFilterDefaultClick(array));
-    filterRandomButton.addEventListener(`click`, onFilterRandomClick(array));
-    filterDiscussedButton.addEventListener(`click`, onFilterDiscussedClick(array));
+    filtersContainer.addEventListener(`click`, onFilterClick(array));
   };
 
   window.picturesFilters = {
