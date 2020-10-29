@@ -1,6 +1,7 @@
 'use strict';
 
 (() => {
+  const ACCERTABLE_FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
   const uploadForm = document.querySelector(`.img-upload__form`);
   const uploadPopup = uploadForm.querySelector(`.img-upload__overlay`);
   const uploadFileInput = uploadForm.querySelector(`.img-upload__input`);
@@ -19,12 +20,19 @@
 
 
   const renderUploadPopup = () => {
-    const uploadFileURL = URL.createObjectURL(uploadFileInput.files[0]);
+    const uploadFile = uploadFileInput.files[0];
+    const uploadFileName = uploadFile.name.toLowerCase();
 
-    uploadPopupPreview.src = uploadFileURL;
+    const matches = ACCERTABLE_FILE_TYPES.some((it) => uploadFileName.endsWith(it));
 
-    for (let i = 0; i < effectsPrewiews.length; i++) {
-      effectsPrewiews[i].style.backgroundImage = `url(${uploadFileURL})`;
+    if (matches) {
+      const uploadFileURL = URL.createObjectURL(uploadFile);
+
+      uploadPopupPreview.src = uploadFileURL;
+
+      for (let i = 0; i < effectsPrewiews.length; i++) {
+        effectsPrewiews[i].style.backgroundImage = `url(${uploadFileURL})`;
+      }
     }
   };
 
