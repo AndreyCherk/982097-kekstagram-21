@@ -7,12 +7,16 @@
   const fullSizePictureClose = fullSizePicture.querySelector(`.big-picture__cancel`);
   const descriptionPhoto = fullSizePicture.querySelector(`.social__caption`);
   const likesCount = fullSizePicture.querySelector(`.likes-count`);
-  const commentsCount = fullSizePicture.querySelector(`.comments-count`);
+  const commentsCount = fullSizePicture.querySelector(`.social__comment-count`);
   const commentsList = fullSizePicture.querySelector(`.social__comments`);
   const commentTemplate = fullSizePicture.querySelector(`.social__comment`);
   const commentsLoader = fullSizePicture.querySelector(`.comments-loader`);
 
   const body = document.querySelector(`body`);
+
+  commentsCount.innerHTML = `<span></span>` + commentsCount.innerHTML.slice(1);
+  const shownCommentsQuantity = commentsCount.querySelector(`span`);
+  const commentsQuantity = commentsCount.querySelector(`.comments-count`);
 
   const renderComment = (comment) => {
     const commentElement = commentTemplate.cloneNode(true);
@@ -26,14 +30,19 @@
   };
 
   const renderComments = (comments) => {
+    let shownComments = comments.length;
+
     for (let i = 0; i < comments.length; i++) {
       let comment = renderComment(comments[i]);
       commentsList.appendChild(comment);
 
       if (i > COMMENTS_STEP - 1) {
         comment.classList.add(`hidden`);
+        shownComments -= 1;
       }
     }
+
+    shownCommentsQuantity.textContent = shownComments;
   };
 
   const onCommentsLoaderClick = () => {
@@ -46,16 +55,18 @@
 
     hiddenComments.splice(0, сommentsToShow);
 
-    if (сommentsToShow !== COMMENTS_STEP) {
+    if (!hiddenComments.length) {
       commentsLoader.classList.add(`hidden`);
       commentsLoader.removeEventListener(`click`, onCommentsLoaderClick);
     }
+
+    shownCommentsQuantity.textContent = +shownCommentsQuantity.textContent + сommentsToShow;
   };
 
   const renderFullSizePicture = (picture) => {
     fullSizePhoto.src = picture.url;
     likesCount.textContent = picture.likes;
-    commentsCount.textContent = picture.comments.length;
+    commentsQuantity.textContent = picture.comments.length;
     descriptionPhoto.textContent = picture.description;
 
     window.util.clearElement(commentsList);
