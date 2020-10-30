@@ -17,8 +17,8 @@ const renderPicture = (picture) => {
 
   pictureElement.addEventListener(`click`, (evt) => {
     evt.preventDefault();
-    window.fullSizePicture.renderFullSizePicture(picture);
-    window.fullSizePicture.openFullSizePicture();
+    window.fullSizePicture.render(picture);
+    window.fullSizePicture.open();
   });
 
   return pictureElement;
@@ -37,5 +37,5 @@ const renderPictures = (pictures) => {
 };
 
 window.picturesRendering = {
-  renderPictures,
+  render: renderPictures,
 };

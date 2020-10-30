@@ -24,14 +24,14 @@ const getDiscussedArray = (array) => {
 
 
 const filterToggle = (newFilterElement) => {
-  for (let i = 0; i < filterButtons.length; i++) {
-    filterButtons[i].classList.remove(`img-filters__button--active`);
-  }
+  filterButtons.forEach((item) => {
+    item.classList.remove(`img-filters__button--active`);
+  });
 
   newFilterElement.classList.add(`img-filters__button--active`);
 };
 
-const onFilterClick = (array) => {
+const onFilterButtonClick = (array) => {
   return window.util.debounce((evt) => {
     let sortArray = array;
 
@@ -44,7 +44,7 @@ const onFilterClick = (array) => {
     }
 
     window.util.clearElement(picturesContainer, [`h2`, `section`]);
-    window.picturesRendering.renderPictures(sortArray);
+    window.picturesRendering.render(sortArray);
     filterToggle(evt.target);
   }, DEBOUNCE_INTERVAL);
 };
@@ -52,9 +52,9 @@ const onFilterClick = (array) => {
 const activateFilters = (array) =>{
 
   filtersContainer.classList.remove(`img-filters--inactive`);
-  filtersContainer.addEventListener(`click`, onFilterClick(array));
+  filtersContainer.addEventListener(`click`, onFilterButtonClick(array));
 };
 
 window.picturesFilters = {
-  activateFilters
+  activate: activateFilters,
 };

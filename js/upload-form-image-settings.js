@@ -1,5 +1,7 @@
 'use strict';
 
+const MIN_EFFECT_PERCENT = 0;
+const MAX_EFFECT_PERCENT = 100;
 const DEFAULT_EFFECT_PERCENT = 100;
 const EFFECT_STEP_PERCENT = 1;
 const EFFECTS = {
@@ -119,10 +121,10 @@ const onEffectPinMouseDown = () => {
     const shiftX = moveEvt.clientX - effectRange.getBoundingClientRect().left;
     const effectPercent = shiftX / effectRange.offsetWidth * 100;
 
-    if (effectPercent > 100) {
-      changeEffectLevel(100);
-    } else if (effectPercent < 0) {
-      changeEffectLevel(0);
+    if (effectPercent > MAX_EFFECT_PERCENT) {
+      changeEffectLevel(MAX_EFFECT_PERCENT);
+    } else if (effectPercent < MIN_EFFECT_PERCENT) {
+      changeEffectLevel(MIN_EFFECT_PERCENT);
     } else {
       changeEffectLevel(effectPercent);
     }
@@ -151,14 +153,14 @@ const onEffectPinKeydown = (evt) => {
   if (evt.key === `ArrowLeft`) {
     if (currentPinPercent >= EFFECT_STEP_PERCENT) {
       changeEffectLevel(currentPinPercent - EFFECT_STEP_PERCENT);
-    } else if (currentPinPercent > 0 && currentPinPercent < EFFECT_STEP_PERCENT) {
-      changeEffectLevel(0);
+    } else if (currentPinPercent > MIN_EFFECT_PERCENT && currentPinPercent < EFFECT_STEP_PERCENT) {
+      changeEffectLevel(MIN_EFFECT_PERCENT);
     }
   } else if (evt.key === `ArrowRight`) {
-    if (currentPinPercent <= 100 - EFFECT_STEP_PERCENT) {
+    if (currentPinPercent <= MAX_EFFECT_PERCENT - EFFECT_STEP_PERCENT) {
       changeEffectLevel(currentPinPercent + EFFECT_STEP_PERCENT);
-    } else if (currentPinPercent < 100 && currentPinPercent > 100 - EFFECT_STEP_PERCENT) {
-      changeEffectLevel(100);
+    } else if (currentPinPercent < MAX_EFFECT_PERCENT && currentPinPercent > MAX_EFFECT_PERCENT - EFFECT_STEP_PERCENT) {
+      changeEffectLevel(MAX_EFFECT_PERCENT);
     }
   }
 };

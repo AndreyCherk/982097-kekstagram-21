@@ -20,17 +20,18 @@ const closeStatusMessage = () => {
 };
 
 const onStatusMessageEscPress = (evt) => {
-  if (evt.key === `Escape`) {
+  window.util.isEscEvent(evt, closeStatusMessage);
+};
+
+const onStatusMessageOutsideClick = (evt) => {
+  if (!evt.target.matches(`[class$="inner"]`)) {
     evt.preventDefault();
     closeStatusMessage();
   }
 };
 
-const onStatusMessageOutsideClick = (evt) => {
-  if (!evt.target.matches(`.${status}__inner`)) {
-    evt.preventDefault();
-    closeStatusMessage();
-  }
+const onStatusButtonClick = () => {
+  closeStatusMessage();
 };
 
 const openStatusMessage = (status) => {
@@ -42,10 +43,10 @@ const openStatusMessage = (status) => {
 
   document.addEventListener(`keydown`, onStatusMessageEscPress);
   document.addEventListener(`click`, onStatusMessageOutsideClick);
-  messageElement.querySelector(`.${status}__button`).addEventListener(`click`, closeStatusMessage);
+  messageElement.querySelector(`.${status}__button`).addEventListener(`click`, onStatusButtonClick);
   main.appendChild(messageElement);
 };
 
 window.uploadFormStatusMessage = {
-  openStatusMessage,
+  open: openStatusMessage,
 };

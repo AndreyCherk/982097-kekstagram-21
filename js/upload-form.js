@@ -6,7 +6,7 @@ const ACCERTABLE_FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
 const uploadForm = document.querySelector(`.img-upload__form`);
 const uploadPopup = uploadForm.querySelector(`.img-upload__overlay`);
 const uploadFileInput = uploadForm.querySelector(`.img-upload__input`);
-const uploadPopupClose = uploadPopup.querySelector(`.img-upload__cancel`);
+const uploadPopupCloseButton = uploadPopup.querySelector(`.img-upload__cancel`);
 const uploadPopupPreview = uploadPopup.querySelector(`.img-upload__preview img`);
 const effectsPrewiews = uploadPopup.querySelectorAll(`.effects__preview`);
 const effectLevelControl = uploadPopup.querySelector(`.effect-level`);
@@ -31,14 +31,15 @@ const renderUploadPopup = () => {
 
     uploadPopupPreview.src = uploadFileURL;
 
-    for (let i = 0; i < effectsPrewiews.length; i++) {
-      effectsPrewiews[i].style.backgroundImage = `url(${uploadFileURL})`;
-    }
+    effectsPrewiews.forEach((item) => {
+      item.style.backgroundImage = `url(${uploadFileURL})`;
+    });
   }
 };
 
 const getDefaultFormSettings = () => {
   uploadForm.reset();
+  uploadPopupPreview.src = `img/upload-default-image.jpg`;
   hashtagsInput.style.boxShadow = `none`;
   commentInput.style.boxShadow = `none`;
   window.uploadFormImageSettings.getDefaultEffectSettings();
@@ -46,10 +47,15 @@ const getDefaultFormSettings = () => {
 };
 
 const onUploadPopupEscPress = (evt) => {
-  if (evt.key === `Escape` && document.activeElement !== hashtagsInput && document.activeElement !== commentInput) {
-    evt.preventDefault();
-    closeUploadPopup();
-  }
+  window.util.isEscEvent(evt, () => {
+    if (document.activeElement !== hashtagsInput && document.activeElement !== commentInput) {
+      closeUploadPopup();
+    }
+  });
+};
+
+const onUploadPopupCloseButtonClick = () => {
+  closeUploadPopup();
 };
 
 const onUploadFormSubmit = (evt) => {
@@ -58,12 +64,12 @@ const onUploadFormSubmit = (evt) => {
 };
 
 const onSuccess = () => {
-  window.uploadFormStatusMessage.openStatusMessage(`success`);
+  window.uploadFormStatusMessage.open(`success`);
   closeUploadPopup();
 };
 
 const onError = () => {
-  window.uploadFormStatusMessage.openStatusMessage(`error`);
+  window.uploadFormStatusMessage.open(`error`);
   closeUploadPopup();
 };
 
@@ -72,7 +78,7 @@ const openUploadPopup = () => {
   body.classList.add(`modal-open`);
 
   document.addEventListener(`keydown`, onUploadPopupEscPress);
-  uploadPopupClose.addEventListener(`click`, closeUploadPopup);
+  uploadPopupCloseButton.addEventListener(`click`, onUploadPopupCloseButtonClick);
   uploadForm.addEventListener(`change`, window.uploadFormImageSettings.onEffectChange);
   effectRange.addEventListener(`click`, window.uploadFormImageSettings.onEffectRangeClick);
   effectLevelPin.addEventListener(`mousedown`, window.uploadFormImageSettings.onEffectPinMouseDown);
@@ -92,7 +98,7 @@ const closeUploadPopup = () => {
   getDefaultFormSettings();
 
   document.removeEventListener(`keydown`, onUploadPopupEscPress);
-  uploadPopupClose.removeEventListener(`click`, closeUploadPopup);
+  uploadPopupCloseButton.removeEventListener(`click`, onUploadPopupCloseButtonClick);
   uploadForm.removeEventListener(`change`, window.uploadFormImageSettings.onEffectChange);
   effectRange.removeEventListener(`click`, window.uploadFormImageSettings.onEffectRangeClick);
   effectLevelPin.removeEventListener(`mousedown`, window.uploadFormImageSettings.onEffectPinMouseDown);
@@ -105,6 +111,6 @@ const closeUploadPopup = () => {
 };
 
 window.uploadForm = {
-  renderUploadPopup,
-  openUploadPopup,
+  render: renderUploadPopup,
+  open: openUploadPopup,
 };

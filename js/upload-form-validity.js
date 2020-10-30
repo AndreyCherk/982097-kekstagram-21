@@ -14,11 +14,11 @@ const regExp = /^#[a-zA-Zа-яА-Я0-9]*$/;
 const onHashtagInputInput = () => {
   if (hashtagsInput.value) {
     const hashtags = hashtagsInput.value.toLowerCase().split(` `);
-    for (let i = 0; i < hashtags.length; i++) {
-      if (hashtags[i] === ``) {
+    hashtags.forEach((item, i) => {
+      if (item === ``) {
         hashtags.splice(i, 1);
       }
-    }
+    });
 
     if (hashtags.length > HASHTAGS_MAX_QUANTITY) {
       hashtagsInput.setCustomValidity(`Нельзя указать больше ${HASHTAGS_MAX_QUANTITY} хэштегов`);
@@ -31,7 +31,7 @@ const onHashtagInputInput = () => {
           hashtagsInput.setCustomValidity(`Длина хэштега не должна превышать ${HASHTAGS_MAX_LENGTH} симв.`);
           break;
         } else if (hashtags[i][0] !== `#`) {
-          hashtagsInput.setCustomValidity(`Хэштег должен начинаеться с символа решётки`);
+          hashtagsInput.setCustomValidity(`Хэштег должен начинаться с символа решётки`);
           break;
         } else if (hashtags[i].length === 1) {
           hashtagsInput.setCustomValidity(`Хэштег не должен состоять только из одной решётки`);

@@ -38,11 +38,19 @@ const debounce = (cb, debounceInterval) => {
   };
 };
 
+const isEscEvent = (evt, action) => {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    action();
+  }
+};
+
 window.util = {
   getRatio,
   getRandomInteger,
   getRandomArrayItem,
   clearElement,
   shuffle,
-  debounce
+  debounce,
+  isEscEvent,
 };

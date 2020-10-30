@@ -3,7 +3,7 @@
 const COMMENTS_STEP = 5;
 const fullSizePicture = document.querySelector(`.big-picture`);
 const fullSizePhoto = fullSizePicture.querySelector(`.big-picture__img img`);
-const fullSizePictureClose = fullSizePicture.querySelector(`.big-picture__cancel`);
+const fullSizePictureCloseButton = fullSizePicture.querySelector(`.big-picture__cancel`);
 const descriptionPhoto = fullSizePicture.querySelector(`.social__caption`);
 const likesCount = fullSizePicture.querySelector(`.likes-count`);
 const commentsCount = fullSizePicture.querySelector(`.social__comment-count`);
@@ -31,15 +31,15 @@ const renderComment = (comment) => {
 const renderComments = (comments) => {
   let shownComments = comments.length;
 
-  for (let i = 0; i < comments.length; i++) {
-    let comment = renderComment(comments[i]);
+  comments.forEach((item, i) => {
+    let comment = renderComment(item);
     commentsList.appendChild(comment);
 
     if (i > COMMENTS_STEP - 1) {
       comment.classList.add(`hidden`);
       shownComments -= 1;
     }
-  }
+  });
 
   shownCommentsQuantity.textContent = shownComments;
 };
@@ -80,10 +80,11 @@ const renderFullSizePicture = (picture) => {
 };
 
 const onFullSizePictureEscPress = (evt) => {
-  if (evt.key === `Escape`) {
-    evt.preventDefault();
-    closeFullSizePicture();
-  }
+  window.util.isEscEvent(evt, closeFullSizePicture);
+};
+
+const onFullSizePictureCloseButtonClick = () => {
+  closeFullSizePicture();
 };
 
 const openFullSizePicture = () => {
@@ -91,7 +92,7 @@ const openFullSizePicture = () => {
   body.classList.add(`modal-open`);
 
   document.addEventListener(`keydown`, onFullSizePictureEscPress);
-  fullSizePictureClose.addEventListener(`click`, closeFullSizePicture);
+  fullSizePictureCloseButton.addEventListener(`click`, onFullSizePictureCloseButtonClick);
 };
 
 const closeFullSizePicture = () => {
@@ -99,11 +100,11 @@ const closeFullSizePicture = () => {
   body.classList.remove(`modal-open`);
 
   document.removeEventListener(`keydown`, onFullSizePictureEscPress);
-  fullSizePictureClose.removeEventListener(`click`, closeFullSizePicture);
+  fullSizePictureCloseButton.removeEventListener(`click`, onFullSizePictureCloseButtonClick);
   commentsLoader.removeEventListener(`click`, onCommentsLoaderClick);
 };
 
 window.fullSizePicture = {
-  renderFullSizePicture,
-  openFullSizePicture,
+  render: renderFullSizePicture,
+  open: openFullSizePicture,
 };

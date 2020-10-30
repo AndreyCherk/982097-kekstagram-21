@@ -2,8 +2,8 @@
 
 const body = document.querySelector(`body`);
 const loadPictures = (pictures) => {
-  window.picturesRendering.renderPictures(pictures);
-  window.picturesFilters.activateFilters(pictures);
+  window.picturesRendering.render(pictures);
+  window.picturesFilters.activate(pictures);
 };
 
 const errorLoadPictures = (errorMessageText) => {
@@ -26,6 +26,6 @@ const errorLoadPictures = (errorMessageText) => {
 };
 
 window.pictures = {
-  loadPictures,
-  errorLoadPictures,
+  load: loadPictures,
+  errorLoad: errorLoadPictures,
 };
