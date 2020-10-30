@@ -16,9 +16,33 @@ const clearElement = (element, exceptionsArray) => {
   }
 };
 
+const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+};
+
+const debounce = (cb, debounceInterval) => {
+  let lastTimeout = null;
+
+  return (...parameters) => {
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(() => {
+      cb(...parameters);
+    }, debounceInterval);
+  };
+};
+
 window.util = {
   getRatio,
   getRandomInteger,
   getRandomArrayItem,
   clearElement,
+  shuffle,
+  debounce
 };

@@ -13,7 +13,7 @@ const commentsLoader = fullSizePicture.querySelector(`.comments-loader`);
 
 const body = document.querySelector(`body`);
 
-commentsCount.innerHTML = `<span></span>` + commentsCount.innerHTML.slice(1);
+commentsCount.innerHTML = `<span></span>${commentsCount.innerHTML.slice(1)}`;
 const shownCommentsQuantity = commentsCount.querySelector(`span`);
 const commentsQuantity = commentsCount.querySelector(`.comments-count`);
 

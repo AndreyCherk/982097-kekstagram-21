@@ -1,5 +1,7 @@
 'use strict';
 
+const serverUploadURL = `https://21.javascript.pages.academy/kekstagram`;
+const TIMEOUT_IN_MS = 10000;
 const ACCERTABLE_FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
 const uploadForm = document.querySelector(`.img-upload__form`);
 const uploadPopup = uploadForm.querySelector(`.img-upload__overlay`);
@@ -52,7 +54,7 @@ const onUploadPopupEscPress = (evt) => {
 
 const onUploadFormSubmit = (evt) => {
   evt.preventDefault();
-  window.upload(new FormData(uploadForm), onSuccess, onError);
+  window.load(serverUploadURL, `POST`, onSuccess, onError, TIMEOUT_IN_MS, new FormData(uploadForm));
 };
 
 const onSuccess = () => {

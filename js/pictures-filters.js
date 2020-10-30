@@ -1,5 +1,6 @@
 'use strict';
 
+const DEBOUNCE_INTERVAL = 500;
 const RANDOM_PHOTO_QUANTITY = 10;
 
 const filtersContainer = document.querySelector(`.img-filters`);
@@ -7,20 +8,7 @@ const filterButtons = filtersContainer.querySelectorAll(`.img-filters__button`);
 
 const picturesContainer = document.querySelector(`.pictures`);
 
-const getRandomArray = (array) => {
-  const randomArray = [];
-
-  for (let i = 0; i < RANDOM_PHOTO_QUANTITY;) {
-    const picture = window.util.getRandomArrayItem(array);
-
-    if (!randomArray.includes(picture, 0)) {
-      randomArray.push(picture);
-      i++;
-    }
-  }
-
-  return randomArray;
-};
+const getRandomArray = (array) => window.util.shuffle(array).slice(0, RANDOM_PHOTO_QUANTITY);
 
 const getDiscussedArray = (array) => {
   const discussedArray = array.slice(0).sort((left, right) => {
@@ -44,21 +32,21 @@ const filterToggle = (newFilterElement) => {
 };
 
 const onFilterClick = (array) => {
-  return window.debounce((evt) => {
-    let sortArray;
+  return window.util.debounce((evt) => {
+    let sortArray = array;
 
     if (evt.target.matches(`#filter-random`)) {
       sortArray = getRandomArray(array);
-    } else if (evt.target.matches(`#filter-discussed`)) {
+    }
+
+    if (evt.target.matches(`#filter-discussed`)) {
       sortArray = getDiscussedArray(array);
-    } else {
-      sortArray = array;
     }
 
     window.util.clearElement(picturesContainer, [`h2`, `section`]);
     window.picturesRendering.renderPictures(sortArray);
     filterToggle(evt.target);
-  });
+  }, DEBOUNCE_INTERVAL);
 };
 
 const activateFilters = (array) =>{
