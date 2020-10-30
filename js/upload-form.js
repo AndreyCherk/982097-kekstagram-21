@@ -37,6 +37,8 @@ const renderUploadPopup = () => {
 
 const getDefaultFormSettings = () => {
   uploadForm.reset();
+  hashtagsInput.style.boxShadow = `none`;
+  commentInput.style.boxShadow = `none`;
   window.uploadFormImageSettings.getDefaultEffectSettings();
   window.uploadFormImageSettings.getDefaultScaleSettings();
 };

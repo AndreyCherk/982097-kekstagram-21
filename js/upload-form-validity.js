@@ -68,10 +68,10 @@ const onCommentInputInput = () => {
 
   commentInput.reportValidity();
 
-  if (hashtagsInput.validationMessage !== ``) {
-    hashtagsInput.style.boxShadow = `0 0 0 2px #ff4e4e`;
+  if (commentInput.validationMessage !== ``) {
+    commentInput.style.boxShadow = `0 0 0 2px #ff4e4e`;
   } else {
-    hashtagsInput.style.boxShadow = `none`;
+    commentInput.style.boxShadow = `none`;
   }
 };
 

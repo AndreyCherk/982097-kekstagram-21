@@ -59,7 +59,7 @@ let scale;
 const onPlusScaleButtonClick = () => {
   if (scale < MAX_SCALE_PERCENT) {
     scale += SCALE_STEP_PERCENT;
-    scaleValueInput.value = `${scale}%`;
+    scaleValueInput.setAttribute(`value`, `${scale}%`);
     uploadPopupPreview.style.transform = `scale(${scale / 100})`;
   }
 };
@@ -67,14 +67,14 @@ const onPlusScaleButtonClick = () => {
 const onMinusScaleButtonClick = () => {
   if (scale > MIN_SCALE_PERCENT) {
     scale -= SCALE_STEP_PERCENT;
-    scaleValueInput.value = `${scale}%`;
+    scaleValueInput.setAttribute(`value`, `${scale}%`);
     uploadPopupPreview.style.transform = `scale(${scale / 100})`;
   }
 };
 
 const getDefaultScaleSettings = () => {
   scale = DEFAULT_SCALE_PERCENT;
-  scaleValueInput.value = `${scale}%`;
+  scaleValueInput.setAttribute(`value`, `${scale}%`);
   uploadPopupPreview.style.transform = `scale(${scale / 100})`;
 };
 
